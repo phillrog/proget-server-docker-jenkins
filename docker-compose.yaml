@@ -1,0 +1,59 @@
+version: '3.4'
+
+services:
+    proget_server:
+        image: inedo/proget:latest
+        volumes: 
+            - proget_packages:/var/proget/packages
+        ports:
+            - 80:80
+            - 443:443
+        environment:
+            - PROGET_DB_TYPE=SqlServer
+            - PROGET_DATABASE=Data Source=proget_db; Initial Catalog=Proget; User ID=proget_user; Password=h0bJVsOe15J8vjS1bXY
+        networks:
+            - proget_network
+        depends_on:
+            - proget_db
+        
+    proget_db:
+        image: luizcarlosfaria/mssql-server-linux:2019-latest
+        volumes:
+            - proget_db:/var/opt/mssql/data
+        ports:
+            - 1433
+        environment:
+            - ACCEPT_EULA=Y
+            - MSSQL_PID=Express
+            - SA_PASSWORD=BOlAy9SLf46T2iyr3Mh
+            - MSSQL_DATABASE=Proget
+            - MSSQL_DATABASE_COLLATE=SQL_Latin1_General_CP1_CI_AS
+            - MSSQL_USER=proget_user
+            - MSSQL_PASSWORD=h0bJVsOe15J8vjS1bXY
+        networks:
+            - proget_network
+
+    jenkins:
+        image: jenkins/jenkins:lts
+        user: root
+        privileged: true
+        ports:
+            - 8083:8080
+            - 50003:50000
+        container_name: jenkins
+        volumes:
+            - ~/jenkins_data:/var/jenkins_home
+            - /var/run/docker.sock:/var/run/docker.sock
+        networks:
+            - proget_network
+        restart: unless-stopped
+
+volumes:
+    proget_packages:
+    proget_db:
+    jenkins:
+        
+
+networks:
+    proget_network:    
+        driver: bridge
