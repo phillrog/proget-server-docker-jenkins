@@ -1,0 +1,28 @@
+pipeline {
+   agent any
+   stages {
+    stage('Clone') {
+      steps {
+        script {
+           // Clona a branch
+           git url: 'https://github.com/phillrog/poc-serilog-level-dinamico.git'
+           // Exibe todos os arquivos baixados
+           sh "ls -lart ./*" 
+           // Exibe a lista de branches
+           sh "git branch -a"
+           // Faz checkout na master
+           sh "git checkout master"
+          }
+       }
+    }
+    // Doc instalação manual do .net core no linux https://docs.microsoft.com/pt-br/dotnet/core/install/linux-debian
+    stage('Build') {
+      steps {
+        script {
+          sh "dotnet restore"
+          sh "dotnet build"
+        }
+      }
+    }
+  }
+}
