@@ -1,0 +1,40 @@
+// necessário acessar /script e executar hudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true
+// necessário instalar node https://github.com/nodesource/distributions direto no container jenkins
+pipeline {
+   agent any
+   stages {
+    stage('Clone') {
+      steps {
+        script {
+           sh "pwd"
+           sh 'rm -rf *'
+           // Clona a branch
+           git url: 'file:///var/repo/proget-server-docker-jenkins-portal'
+           sh "ls -lart ./*" 
+          }
+       }
+    }
+    stage('Install') {
+      steps {
+        script {
+            dir('portal') {
+                sh "pwd"    
+                sh "npm install"
+            }
+          }
+       }
+    }
+    stage('Build') {
+      steps {
+        script {
+            dir('portal') {
+               sh "pwd"    
+               sh "npm run build"
+            }
+          }
+       }
+    }
+  }
+}
+
+ 
