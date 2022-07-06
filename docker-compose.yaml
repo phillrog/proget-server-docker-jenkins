@@ -41,9 +41,13 @@ services:
             - 8083:8080
             - 50003:50000
         container_name: jenkins
+        environment:
+            - JAVA_OPTS=-Dhudson,plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true
+            - JAVA_OPTS=-Djenkins.install.runSetupWizard=false
         volumes:
             - ~/jenkins_data:/var/jenkins_home
             - /var/run/docker.sock:/var/run/docker.sock
+            - C:/Users/phillipe.souza/source/repos/proget-server-docker-jenkins-portal:/var/repo/proget-server-docker-jenkins-portal:ro 
         networks:
             - proget_network
         restart: unless-stopped
