@@ -1,0 +1,39 @@
+// necessário acessar /script e executar hudson.plugins.git.GitSCM.ALLOW_LOCAL_CHECKOUT=true
+// necessário instalar docker https://docs.docker.com/engine/install/debian/
+/*
+  solução para registrar key 
+  gpg --keyserver pgpkeys.mit.edu --recv-key 010908312D230C5F
+  gpg -a --export 010908312D230C5F | sudo apt-key add -
+
+  solução para apagar repositorios, é remover dos arquivos
+  nano /etc/apt/sources.list
+  nano /etc/apt/sources.list.d/x
+*/
+
+pipeline {
+   agent any
+   stages {
+    stage('Clone') {
+      steps {
+        script {
+           sh "pwd"
+           sh 'rm -rf *'
+           // Clona a branch
+           git url: 'file:///var/repo/proget-server-docker-jenkins-portal'
+           sh "ls -lart ./*" 
+          }
+       }
+    }    
+    stage('Build') {
+      steps {
+        script {
+            dir('portal') {
+               sh "docker build . -t phillrog/portal-nginx"
+            }
+          }
+       }
+    }
+  }
+}
+
+ 
