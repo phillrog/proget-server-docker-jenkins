@@ -1,0 +1,37 @@
+// Foi instalado os docker com o curl https://get.docker.com/ > dockerinstall && chmod 777 dockerinstall && ./dockerinstall
+
+pipeline {
+   agent any
+   stages {
+    stage('Clone') {
+      steps {
+        script {
+           sh "pwd"
+           sh 'rm -rf *'
+           // Clona a branch
+           git url: 'https://github.com/phillrog/proget-server-docker-jenkins-portal.git'
+           sh "ls -lart ./*" 
+          }
+       }
+    }    
+    stage('Build') {
+      steps {
+        script {
+                TAG = VersionNumber(versionNumberString: '${BUILD_DATE_FORMATTED, "yyyyMMdd"}-develop-${BUILDS_TODAY}')
+                echo "Building..."
+                sh "docker build . -t ${dockerRegistry}/${image}:$TAG"
+          }
+       }
+    }
+    stage('Publish') {
+      steps {
+        script {
+                echo "Efetuando login no proget..."
+                sh "docker login ${dockerRegistry} -u ${dockerRegistryUsuario} -p ${dockerRegistrySenha}"
+                TAG = VersionNumber(versionNumberString: '${BUILD_DATE_FORMATTED, "yyyyMMdd"}-develop-${BUILDS_TODAY}')
+                sh "docker push ${dockerRegistry}/${image}:$TAG"
+          }
+       }
+    }
+  }
+}
