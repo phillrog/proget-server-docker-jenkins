@@ -17,7 +17,7 @@ pipeline {
     stage('Build') {
       steps {
         script {
-                TAG = VersionNumber(versionNumberString: '${BUILD_DATE_FORMATTED, "yyyyMMdd"}-develop-${BUILDS_TODAY}')
+                TAG = VersionNumber(versionNumberString: '${BUILD_DATE_FORMATTED, "yyyyMMdd"}-develop-${BUILDS_ALL_TIME}')
                 echo "Building..."
                 sh "docker build . -t ${dockerRegistry}/${image}:$TAG"
           }
@@ -28,7 +28,7 @@ pipeline {
         script {
                 echo "Efetuando login no proget..."
                 sh "docker login ${dockerRegistry} -u ${dockerRegistryUsuario} -p ${dockerRegistrySenha}"
-                TAG = VersionNumber(versionNumberString: '${BUILD_DATE_FORMATTED, "yyyyMMdd"}-develop-${BUILDS_TODAY}')
+                TAG = VersionNumber(versionNumberString: '${BUILD_DATE_FORMATTED, "yyyyMMdd"}-develop-${BUILDS_ALL_TIME}')
                 sh "docker push ${dockerRegistry}/${image}:$TAG"
           }
        }
