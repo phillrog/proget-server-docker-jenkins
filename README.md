@@ -160,5 +160,6 @@ e veja na tela do webhook. Tem que restornar código 200
 
 ## Resultado Final
 
+![image](./doc/resultado.gif)
 
 
