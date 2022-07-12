@@ -1,5 +1,23 @@
 # proget-server-docker-jenkins
 
+# Menu
+- [Objetivo](#objetivo)
+- [Premissa](#premissa)
+- [Observações](#observações)
+- [Como executar](#como-executar)
+- [Passo 1 - Iniciar containers](#passo-1---iniciar-containers)
+- [Passo 2 - Configurações de plugins no jenkins](#passo-2---configurações-de-plugins-no-jenkins)
+- [Passo 3 - Configuração do docker dentro do container do Jenkins](#passo-3---configuração-do-docker-dentro-do-container-do-jenkins)
+- [Passo 4 - Configuração do Job Parte I](#passo-4---configuração-do-job-parte-i)
+- [Passo 5 - Configuração do Job Parte II](#passo-5---configuração-do-job-parte-ii)
+- [Passo 6 - Configuração do Job Parte III](#passo-6---configuração-do-job-parte-iii)
+- [Passo 7 - Proxy reverso ngRok](#passo-7---proxy-reverso-ngrok)
+- [Passo 8 - Crie um container do ngrok](#passo-8---crie-um-container-do-ngrok)
+- [Passo 9 - Configurar webhook jenkins no repositório da aplicação dockerizada](#passo-9---configurar-webhook-jenkins-no-repositório-da-aplicação-dockerizada)
+- [Passo 10 - Faça um teste da esteira](#passo-10---faça-um-teste-da-esteira)
+- [Resultado Final](#resultado-final)
+
+---
 # Objetivo
 Configurar um simples pipeline CI/CD com Jenkins, Docker, Github e Proget em localhost.
 
@@ -9,9 +27,9 @@ Foi utilizado a idéia da branch [proget-server-docker](https://github.com/phill
 # Observações
 Foi criado a branch [portal](https://github.com/phillrog/proget-server-docker-jenkins-portal) que é o repositório de uma aplicação angular que foi transformada em uma imagem Docker, configurada através do arquivo ```Dockerfile```. Então a imagem que será publicada se originará deste projeto mas para funcionar na sua máquina é necessário criar uma branch semelhante seu para utilizar na esteira.
 
-# Como executar ?
+# Como executar
 
-## Passo 1 - Iniciar conatiners
+## Passo 1 - Iniciar containers
 Rode ```docker-compose up ``` na raiz deste projeto
 
 ## Passo 2 - Configurações de plugins no jenkins
@@ -54,6 +72,7 @@ Informe a chave do jenkins, cadastre um usuário, instale os plugins padrões e 
   </tbody>
 </table>
 
+
 ## Passo 3 - Configuração do docker dentro do container do Jenkins
 Instale o docker no conainer do Jenkins através do script de instalação automática com os seguintes comandos:
 
@@ -61,9 +80,11 @@ Instale o docker no conainer do Jenkins através do script de instalação autom
 * ```docker exec -it ID_CONTAINER_JENKINS  /bin/bash``` - entre no prompt do container Jenkins
 * ```curl https://get.docker.com/ > dockerinstall && chmod 777 dockerinstall && ./dockerinstall``` - execute esta linha de comando para efetuar a instalação automatica do docker dentro do container do jenkins.
 
+
 ## Passo 4 - Configuração do Job Parte I
 Crie um job Pipeline e cole o conteúdo do arquivo [portal-docker-plugin.jenkinsfile](./pipelines/portal-docker-plugin.jenkinsfile).
 ![image](https://user-images.githubusercontent.com/8622005/178378775-9ff3bee7-0115-4daa-815c-3b416566d925.png)
+
 
 ## Passo 5 - Configuração do Job Parte II
 Configure as variáveis de string conforme abaixo:
@@ -111,6 +132,7 @@ Configure as variáveis de string conforme abaixo:
   </tbody>
 </table>
 
+
 ## Passo 6 - Configuração do Job Parte III
 Marque a opção abaixo
 ![image](https://user-images.githubusercontent.com/8622005/178379298-e8399919-c220-4aa6-9d07-60bb81360b2c.png)
@@ -121,11 +143,13 @@ E coloque um token qualquer
 Teste o webhook http://localhost:8083/generic-webhook-trigger/invoke?token=TOKEN_JOB_QUE_CADASTROU no navegador:
 
 ![image](https://user-images.githubusercontent.com/8622005/178379502-019f4f6d-95f2-4eee-ada7-d7c38dffd605.png)
+---
 
-## Passo 7 - Proxy reverso [ngRok](https://ngrok.com/)
-Crie uma conta no ngrok para que o endpoint generic-webhook-trigger/invoke?token=TOKEN_JOB_QUE_CADASTROU se torne público na Web.
+## Passo 7 - Proxy reverso ngRok
+Crie uma conta no [ngrok](https://ngrok.com/) para que o endpoint generic-webhook-trigger/invoke?token=TOKEN_JOB_QUE_CADASTROU se torne público na Web.
 
-## Passo 7 - Crie um container do ngrok
+
+## Passo 8 - Crie um container do ngrok
 Execute:
 
 ```docker run -it -e NGROK_AUTHTOKEN=TOKEN_NGROK ngrok/ngrok http host.docker.internal:8083 ```
@@ -134,7 +158,8 @@ Ficará assim:
 
 ![image](https://user-images.githubusercontent.com/8622005/178380595-caa6fd30-632e-425a-910a-9c715d441864.png)
 
-## Passo 8 - Configurar webhook jenkins no repositório da aplicação dockerizada
+
+## Passo 9 - Configurar webhook jenkins no repositório da aplicação dockerizada
 Abra seu respositório que terá sua imagem publicada no proget através do jenkins. Vá no menu ```Settings```, clique em ```Webhooks``` em seguinda ```Add Webhook```
 
 ![image](https://user-images.githubusercontent.com/8622005/178380897-4640a2ac-273f-4176-88e6-3b103ba8e67a.png)
@@ -147,7 +172,8 @@ https://3988-45-4-33-150.sa.ngrok.io/generic-webhook-trigger/invoke?token=TOKEN_
 
 O restante das opções pode ficar como estão.
 
-## Passo 9 - Faça um teste da esteira
+
+## Passo 10 - Faça um teste da esteira
 Vá no reposittório que possui o Dockerfile, execute os comandos git:
 
 ```git commit --allow-empty -m "Trigger"```
